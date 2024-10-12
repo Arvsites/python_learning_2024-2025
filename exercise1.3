@@ -28,9 +28,6 @@ try:
         if rec.AcceptWaveform(data):
             result = json.loads(rec.Result())
             print(f"Распознанный текст: {result['text']}")
-        else:
-            partial_result = json.loads(rec.PartialResult())
-            print(f"Промежуточный результат: {partial_result['partial']}")
 except KeyboardInterrupt:
     print("Распознавание завершено.")
 finally:
