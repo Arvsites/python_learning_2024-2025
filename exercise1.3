@@ -1,25 +1,39 @@
-import vosk
-import sys
 import os
-import wave
+import vosk
+import pyaudio
 import json
 
-# Загрузка модели
+# Проверьте, существует ли модель
 if not os.path.exists("model"):
-    print("Пожалуйста, скачайте модель с https://alphacephei.com/vosk/models и распакуйте ее в текущий каталог.")
-    sys.exit()
+    print("Пожалуйста, скачайте модель с https://alphacephei.com/vosk/models и распакуйте её в текущий каталог.")
+    exit()
 
+# Загрузка модели
 model = vosk.Model("model")
 
-# Открытие аудиофайла
-wf = wave.open("path_to_audio.wav", "rb")
-rec = vosk.KaldiRecognizer(model, wf.getframerate())
+# Настройка аудиопотока
+audio = pyaudio.PyAudio()
+stream = audio.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8000)
+stream.start_stream()
 
-# Распознавание речи
-while True:
-    data = wf.readframes(4000)
-    if len(data) == 0:
-        break
-    if rec.AcceptWaveform(data):
-        result = json.loads(rec.Result())
-        print(f"Распознанный текст: {result['text']}")
+rec = vosk.KaldiRecognizer(model, 16000)
+
+print("Начало распознавания... Говорите в микрофон.")
+
+try:
+    while True:
+        data = stream.read(4000, exception_on_overflow=False)
+        if len(data) == 0:
+            break
+        if rec.AcceptWaveform(data):
+            result = json.loads(rec.Result())
+            print(f"Распознанный текст: {result['text']}")
+        else:
+            partial_result = json.loads(rec.PartialResult())
+            print(f"Промежуточный результат: {partial_result['partial']}")
+except KeyboardInterrupt:
+    print("Распознавание завершено.")
+finally:
+    stream.stop_stream()
+    stream.close()
+    audio.terminate()
