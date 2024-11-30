@@ -1,0 +1,21 @@
+import random
+
+def x_number():
+    x = random.randint(1,500)
+    print("я загдала число ")
+    popit = 0
+    while True:
+        my_numer = input("введите число: ")
+        if int(my_numer) == x:
+            print("Угадал!!!")
+            break
+        elif int(my_numer) > x:
+            print("Меньше")
+        elif int(my_numer) < x:
+            print("Больше")
+        popit += 1
+        print(popit)
+        if popit == 15:
+            break
+
+x_number()
