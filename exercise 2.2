@@ -1,0 +1,46 @@
+# pip install PyQt5
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLineEdit, QLabel
+import random
+
+
+x = random.randint(1,500)
+
+# Создаем основное окно приложения
+app = QApplication(sys.argv)
+window = QWidget()
+window.setWindowTitle('Угадай число')
+window.resize(800,400)
+
+
+# Создаем элементы интерфейса
+number1 = QLineEdit()
+result_label = QLabel('Число загадано')
+
+# Функции для выполнения операций
+def add():
+    result = float(number1.text())
+    result_label.setText(f'Результат: {result}')
+
+
+# Создаем кнопки
+add_button = QPushButton('Угадать')
+
+# Устанавливаем размеры кнопок
+add_button.setFixedSize(100, 50)
+
+# Подключаем кнопки к функциям
+add_button.clicked.connect(add)
+
+# Создаем компоновщик и добавляем элементы
+layout = QVBoxLayout()
+layout.addWidget(number1)
+layout.addWidget(add_button)
+layout.addWidget(result_label)
+
+# Устанавливаем компоновщик в окно
+window.setLayout(layout)
+
+# Показываем окно
+window.show()
+sys.exit(app.exec_())
