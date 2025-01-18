@@ -1,0 +1,26 @@
+# pip install opencv-python
+import cv2
+
+
+cam = cv2.VideoCapture(0)
+ret, frame = cam.read()
+bbox = cv2.selectROI('выбрать объект', frame, fromCenter=False, showCrosshair=True)
+print(bbox)
+
+while True:
+    ret, frame = cam.read()
+
+
+    x=bbox[0]
+    y=bbox[1]
+    w=bbox[2]
+    h=bbox[3]
+    cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 255), thickness=3)
+
+    cv2.imshow('My programm', frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cam.release()
+cv2.destroyAllWindows()
