@@ -1,0 +1,33 @@
+# pip install opencv-python
+import cv2
+import time
+
+
+cam = cv2.VideoCapture(0)
+ret, frame = cam.read()
+bbox = cv2.selectROI('выбрать объект', frame, fromCenter=False, showCrosshair=True)
+print(bbox)
+tracker = cv2.TrackerCSRT.create()
+tracker.init(frame, bbox)
+
+while True:
+    ret, frame = cam.read()
+    ret, bbox = tracker.update(frame)
+
+    x=bbox[0]
+    y=bbox[1]
+    w=bbox[2]
+    h=bbox[3]
+
+    height, width, _ = frame.shape
+    print( int(100*(x+h/2)/width), int(100*(y+w/2)/height) )
+
+    cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 255), thickness=3)
+
+    cv2.imshow('My programm', frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cam.release()
+cv2.destroyAllWindows()
