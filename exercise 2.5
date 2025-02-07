@@ -1,1 +1,33 @@
+ARDUINO 
 
+#include <PULSE.h>
+PULSE pulse;
+
+void setup() {
+  pulse.PulseBegin();
+  pulse.setMotorInvert(1, 1);
+  Serial.begin(9600);
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    int  str = Serial.read();
+    if (str == '1') {
+      Serial.println("good");
+      pulse.setMotorPowers(50, 50);
+    }
+    if (str == '2') {
+      pulse.setMotorPowers(0, 0);
+    }
+  }
+}
+
+PYTHON
+
+import serial
+import time
+
+ser = serial.Serial('COM40', 9600)
+time.sleep(5)
+ser.write(b'2')
+ser.close()
