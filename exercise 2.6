@@ -1,0 +1,55 @@
+# pip install opencv-python
+# pip install opencv-contrib-python
+import cv2
+
+
+# Инициализация камеры
+cam = cv2.VideoCapture(0)
+tracker = None
+tracking_active = False
+bbox = None
+
+
+def mouse_callback(event, x, y, flags, param):
+    global bbox, tracker, tracking_active
+    if event == cv2.EVENT_LBUTTONDOWN:
+        # Создаем квадрат 40x40 вокруг точки клика
+        bbox = (x - 20, y - 20, 40, 40)
+        # Инициализируем трекер
+        tracker = cv2.TrackerCSRT.create()
+        tracker.init(frame, bbox)
+        tracking_active = True
+
+
+# Создаем окно и устанавливаем обработчик мыши
+cv2.namedWindow('My programm')
+cv2.setMouseCallback('My programm', mouse_callback)
+
+while True:
+    ret, frame = cam.read()
+    if not ret:
+        break
+
+    # Если трекинг активен, обновляем позицию объекта
+    if tracking_active and tracker is not None:
+        ret_tracker, bbox = tracker.update(frame)
+        if ret_tracker:
+            x, y, w, h = [int(v) for v in bbox]
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 255), thickness=3)
+
+            # Выводим координаты центра объекта в процентах
+            height, width, _ = frame.shape
+            print(f"Center: {int(100 * (x + w / 2) / width)}%, {int(100 * (y + h / 2) / height)}%")
+
+    cv2.imshow('My programm', frame)
+
+    # Обработка нажатий клавиш
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord('q'):  # Выход из программы
+        break
+    elif key == ord('v'):  # Отключение трекинга
+        tracking_active = False
+        tracker = None
+
+cam.release()
+cv2.destroyAllWindows()
